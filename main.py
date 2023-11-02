@@ -1,6 +1,7 @@
 from playsound import playsound
 import time
 import os
+import pyperclip
 
 morse_code_dict = {
     'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..',
@@ -23,11 +24,13 @@ morse_code_dict = {
 }
 
 
+# Clear console.
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def text_to_morse(text):
+    """Convert text to morse code. Return morse code."""
     morse_arr = []
     morse = ''
 
@@ -48,6 +51,7 @@ def text_to_morse(text):
 
 
 def morse_to_text(morse_code):
+    """Convert morse code to text. Return text."""
     decoded_msg = ''
 
     # Reverse the code_morse_dict to map Morse code back to characters.
@@ -66,16 +70,21 @@ def morse_to_text(morse_code):
 
 
 def play_morse_code(text, dot_duration=0.2, sound_delay=0.1):
+    """Play morse code."""
     for char in text:
         if char == ' ':
+            # 3 dots for word spacing.
             time.sleep(3 * dot_duration)
         else:
             morse_char = morse_code_dict.get(char.upper())
             for dot_dash in morse_char:
+                # Play a short beep for a dot.
                 if dot_dash == '.':
                     playsound('dot.mp3')
+                # Play a longer beep for a dash.
                 elif dot_dash == '-':
                     playsound('dash.mp3')
+                # Delay between characters.
                 time.sleep(dot_duration)
             time.sleep(sound_delay)
 
@@ -93,9 +102,10 @@ is_active = True
 while is_active:
     print(ascii_art)
     print("Welcome to the International Morse Code Converter.\nWhat do you wish to do?")
-    print("1. Convert Text To Morse and Play Morse.\n2. Convert Morse to Text.\n3. Exit\n")
+    print("1. Convert Text To Morse.\n2. Convert Morse to Text.\n3. Play Morse Code\n4. Exit\n")
     choice = input("Your choice: ")
 
+    # Convert Text to Morse
     if choice == '1':
         clear_console()
         print("Input Restrictions: \nLetters: A-Z \nNumbers: 0-9 \nPunctuation Marks: '. , ? \ ' ! / ( ) & : ; = + - "
@@ -107,17 +117,35 @@ while is_active:
             continue
         else:
             print(f"\nMorse Code: {morse_msg}")
-            play_choice = input(f"\nPlay Morse Code(Y/N): ").upper()
+
+            # Copy morse code to clipboard using pyperclip.
+            clip_choice = input("\nStore Morse Code in clipboard(Y/N)? ").upper()
+            if clip_choice == 'Y':
+                pyperclip.copy(morse_msg)
+                print("Morse Code Saved...")
+
+            # Play morse code using playsound.
+            play_choice = input(f"\nPlay Morse Code(Y/N)? ").upper()
             if play_choice == 'Y':
-                print("\nPlaying...\n")
+                print("Playing...\n")
                 play_morse_code(secret_msg)
             else:
                 time.sleep(2)
+
+    # Convert Morse to Text.
     elif choice == '2':
         clear_console()
         print("Input Restrictions: \nCharacter Set: Only dots(.) and dashes(-). \nSpacing: Separate characters by a "
               "space and words by three spaces.\n")
-        morse_msg = input("Enter morse message: ")
+        print(f"Saved Morse Code: {pyperclip.paste()}\n")
+
+        # Use morse code saved in clipboard.
+        morse_choice = input("Use Saved Morse Code(Y/N)? ").upper()
+        if morse_choice == 'Y':
+            morse_msg = pyperclip.paste()
+            print("Using Saved Morse Code...")
+        else:
+            morse_msg = input("\nEnter morse message: ")
         invalid_input = False
         for morse_sym in morse_msg:
             if morse_sym not in ['.', '-', ' ']:
@@ -128,11 +156,23 @@ while is_active:
             text_msg = morse_to_text(morse_msg)
             print(f"\nSecret Message: {text_msg}")
         time.sleep(2)
+
+    # Play Morse Code
     elif choice == '3':
+        clear_console()
+        # Play morse code stored in clipboard.
+        print(f"Morse Code: {pyperclip.paste()}")
+        print("Playing...")
+        play_morse_code(morse_to_text(pyperclip.paste()))
+
+    # Exit.
+    elif choice == '4':
         clear_console()
         is_active = False
         print("Exiting...")
         time.sleep(2)
+
+    # To deal with bad inputs.
     else:
         clear_console()
         print("Warning: Invalid Choice!!!")
