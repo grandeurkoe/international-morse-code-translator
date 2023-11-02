@@ -28,16 +28,21 @@ def clear_console():
 
 def text_to_morse(text):
     morse_arr = []
+    morse = ''
 
-    for char in text:
-        # Space between words in Morse code is typically represented by Seven dots or three spaces.
-        if char == ' ':
-            morse_arr.append(' ')
-        else:
-            morse_arr.append(morse_code_dict[char])
+    not_in_dict = [char for char in text if char not in morse_code_dict.keys()]
 
-    morse = ' '.join(morse_arr)
+    if len(not_in_dict) == 0:
+        for char in text:
+            # Space between words in Morse code is typically represented by Seven dots or three spaces.
+            if char == ' ':
+                morse_arr.append(' ')
+            else:
+                morse_arr.append(morse_code_dict[char])
 
+        morse = ' '.join(morse_arr)
+    else:
+        print(f"\nWarning: {not_in_dict} doesn't exist.")
     return morse
 
 
@@ -63,7 +68,7 @@ ascii_art = """
  ______   ______     __  __     ______         __    __     ______     ______     ______     ______    
 /\\__  _\\ /\\  ___\\   /\\_\\_\\_\\   /\\__  _\\       /\\ "-./  \\   /\\  __ \\   /\\  == \\   /\\  ___\\   /\\  ___\\   
 \\/_/\\ \\/ \\ \\  __\\   \\/\\/_/\\/_  \\/_/\\ \\/       \\ \\ \\-./\\ \\  \\ \\ \\/\\ \\  \\ \\  __<   \\ \\___  \\  \\ \\  __\\   
-   \\ \\_\\  \\ \\_____\\   /\\_\\/\\_\\    \\ \\_\\        \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\ \\_\\ \\_\\  \\/____\\  \\ \\_____\\ 
+   \\ \\_\\  \\ \\_____\\   /\\_\\/\\_\\    \\ \\_\\        \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\ \\_\\ \\_\\  \\/____\\  1\\ \\_____\\ 
     \\/_/   \\/_____/   \\/_/\\/_/     \\/_/         \\/_/  \\/_/   \\/_____/   \\/_/ /_/   \\/_____/   \\/_____/
 """
 
@@ -77,19 +82,26 @@ while is_active:
 
     if choice == '1':
         clear_console()
-        print("Input Restrictions: \nLetters: A-Z \nNumbers: 0-9 \nPunctuation Marks: . , ? ! ' \" : ; - ( ) & / "
-              "+ = @\n")
+        print("Input Restrictions: \nLetters: A-Z \nNumbers: 0-9 \nPunctuation Marks: '. , ? \ ' ! / ( ) & : ; = + - "
+              "_ \" $ @ ")
         secret_msg = input("Enter secret message(letters must be uppercase): ").upper()
         morse_msg = text_to_morse(secret_msg)
-        print(f"\nMorse Code: {morse_msg}")
+        if morse_msg == "":
+            time.sleep(2)
+            continue
+        else:
+            print(f"\nMorse Code: {morse_msg}")
         time.sleep(2)
     elif choice == '2':
         clear_console()
         print("Input Restrictions: \nCharacter Set: Only dots(.) and dashes(-). \nSpacing: Separate characters by a "
               "space and words by three spaces.\n")
         morse_msg = input("Enter morse message: ")
-        text_msg = morse_to_text(morse_msg)
-        print(f"Secret Message: {text_msg}")
+        if morse_msg not in ['.', '-', ' ']:
+            print("\nWarning: Invalid Input!!!")
+        else:
+            text_msg = morse_to_text(morse_msg)
+            print(f"Secret Message: {text_msg}")
         time.sleep(2)
     elif choice == '3':
         clear_console()
