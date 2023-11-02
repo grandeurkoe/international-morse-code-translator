@@ -1,3 +1,4 @@
+from playsound import playsound
 import time
 import os
 
@@ -30,7 +31,7 @@ def text_to_morse(text):
     morse_arr = []
     morse = ''
 
-    not_in_dict = [char for char in text if char not in morse_code_dict.keys()]
+    not_in_dict = [char for char in text.replace(" ", "") if char not in morse_code_dict.keys()]
 
     if len(not_in_dict) == 0:
         for char in text:
@@ -64,6 +65,21 @@ def morse_to_text(morse_code):
     return decoded_msg
 
 
+def play_morse_code(text, dot_duration=0.2, sound_delay=0.1):
+    for char in text:
+        if char == ' ':
+            time.sleep(3 * dot_duration)
+        else:
+            morse_char = morse_code_dict.get(char.upper())
+            for dot_dash in morse_char:
+                if dot_dash == '.':
+                    playsound('dot.mp3')
+                elif dot_dash == '-':
+                    playsound('dash.mp3')
+                time.sleep(dot_duration)
+            time.sleep(sound_delay)
+
+
 ascii_art = """
  ______   ______     __  __     ______         __    __     ______     ______     ______     ______    
 /\\__  _\\ /\\  ___\\   /\\_\\_\\_\\   /\\__  _\\       /\\ "-./  \\   /\\  __ \\   /\\  == \\   /\\  ___\\   /\\  ___\\   
@@ -77,7 +93,7 @@ is_active = True
 while is_active:
     print(ascii_art)
     print("Welcome to the International Morse Code Converter.\nWhat do you wish to do?")
-    print("1. Convert Text To Morse.\n2. Convert Morse to Text.\n3. Exit\n")
+    print("1. Convert Text To Morse and Play Morse.\n2. Convert Morse to Text.\n3. Exit\n")
     choice = input("Your choice: ")
 
     if choice == '1':
@@ -91,17 +107,26 @@ while is_active:
             continue
         else:
             print(f"\nMorse Code: {morse_msg}")
-        time.sleep(2)
+            play_choice = input(f"\nPlay Morse Code(Y/N): ").upper()
+            if play_choice == 'Y':
+                print("\nPlaying...\n")
+                play_morse_code(secret_msg)
+            else:
+                time.sleep(2)
     elif choice == '2':
         clear_console()
         print("Input Restrictions: \nCharacter Set: Only dots(.) and dashes(-). \nSpacing: Separate characters by a "
               "space and words by three spaces.\n")
         morse_msg = input("Enter morse message: ")
-        if morse_msg not in ['.', '-', ' ']:
+        invalid_input = False
+        for morse_sym in morse_msg:
+            if morse_sym not in ['.', '-', ' ']:
+                invalid_input = True
+        if invalid_input:
             print("\nWarning: Invalid Input!!!")
         else:
             text_msg = morse_to_text(morse_msg)
-            print(f"Secret Message: {text_msg}")
+            print(f"\nSecret Message: {text_msg}")
         time.sleep(2)
     elif choice == '3':
         clear_console()
