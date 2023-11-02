@@ -1,5 +1,4 @@
-# Text to Morse Code Converter
-
+# International Morse Code Translator
 **Morse code** is a method used in telecommunication to encode text character as standardized sequences of two different signal durations, called _dots and dashes_
 
 Text Input restrictions:
