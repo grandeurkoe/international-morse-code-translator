@@ -11,3 +11,8 @@ Morse Code Input restrictions:
 1. **Character Set**: Only dots(.) and dashes(-).
 2. **Spacing**: Separate characters by a space and words by three spaces.
 
+Features included:
+1. Convert text to morse code.
+2. Convert morse code to text.
+3. Play morse code.
+4. Save morse code in clipboard.
